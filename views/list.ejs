@@ -1,0 +1,26 @@
+<%- include("header") -%>
+
+<div class="box" id="heading">
+  <h1> <%= listTitle %> </h1>
+</div>
+
+<div class="box">
+  <% newListItems.forEach((item) => { %>
+  <form action="/delete" method="post">
+    <div class="item">
+      <input type="checkbox" name="checkbox" value="<%= item._id %>" onclick="this.form.submit()">
+      <%# INPUT TYPE = "HIDDEN": permite enviar inputs não visíveis pelo utilizador %>
+      <input type="hidden" name="listTitle" value="<%= listTitle %>">
+      </input>
+      <p><%= item.content %></p>
+    </div>
+  </form>
+  <% }); %>
+
+  <form class="item" action="/" method="post">
+    <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
+    <button type="submit" name="list" value="<%= listTitle %>">+</button>
+  </form>
+</div>
+
+<%- include("footer") -%>
