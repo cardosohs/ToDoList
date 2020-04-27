@@ -1,4 +1,4 @@
-//jshint esversion:6
+//módulo date.js com dois métodos que serão exportados
 
 exports.getDate = function() {
 

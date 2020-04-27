@@ -174,7 +174,7 @@ app.post("/", (req, res) => {
 });
 
 
-//Remover da homepage ou de um das listas criadas
+//Remover da homepage ou de uma das listas criadas
 app.post("/delete", (req, res) => {
   //1) Dados necessários: nome do item e titulo da lista
   const itemToDelID = req.body.checkbox;
