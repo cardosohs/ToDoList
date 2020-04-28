@@ -19,10 +19,10 @@ app.use(express.static("public"));
 let today = date.getDate();
 
 //Connect to a LOCAL MONGODB
-mongoose.connect("mongodb://localhost:27017/todolistDB", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-});
+// mongoose.connect("mongodb://localhost:27017/todolistDB", {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// });
 
 //Connect to MONGODB ATLAS CLUSTER
 const username = process.env.MONGODBA_USER;
