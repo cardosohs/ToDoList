@@ -25,15 +25,15 @@ mongoose.connect("mongodb://localhost:27017/todolistDB", {
 });
 
 //Connect to MONGODB ATLAS CLUSTER
-// const username = process.env.MONGODBA_USER;
-// const password = process.env.MONGODBA_PWD;
-// const databaseName = process.env.MONGODBA_DBNAME;
-// const clusterID = process.env.MONGODBA_CLUSTER_ID;
-//
-// mongoose.connect("mongodb+srv://" + username + ":" + password + "@" + clusterID + "/" + databaseName, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// });
+const username = process.env.MONGODBA_USER;
+const password = process.env.MONGODBA_PWD;
+const databaseName = process.env.MONGODBA_DBNAME;
+const clusterID = process.env.MONGODBA_CLUSTER_ID;
+
+mongoose.connect("mongodb+srv://" + username + ":" + password + "@" + clusterID + "/" + databaseName, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 //SCHEMA and MODEL usados para criar uma nova coleção para items
 const itemSchema = new mongoose.Schema({
