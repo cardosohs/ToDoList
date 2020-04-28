@@ -73,40 +73,88 @@ const List = mongoose.model("List", listSchema);
 
 //ROUTING
 
-//Como evitar REPETIR items na homepage?
-app.get("/", (req, res) => {
-  //1) O servidor procura por itens da homepage na DB
-  Item.find(
-    {},//filter: find ALL
-    (err, foundItems) => {
-    //2) Se a DB estiver vazia (1º load da homepage)...
-    if (foundItems.length === 0) {
-      //3) ...Adicionar os default items
-      Item.insertMany(
-        defaultItems,
-        (err) => {
-        //Handler se houver erros na adição de items a DB
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Success at inserting default items on DB");
-        }
-      });
-      //4) Após adicionar, redirecionar para a homepage
-      res.redirect('/');
-      //5) Se a DB NAO estiver vazia (a partir do 2º load da homepage, inclusive)
+app.route("/")
+
+  //Como evitar REPETIR items na homepage?
+  .get((req, res) => {
+
+    //1) O servidor procura por itens da homepage na DB
+    Item.find(
+      {},//filter: find ALL
+      (err, foundItems) => {
+      //2) Se a DB estiver vazia (1º load da homepage)...
+      if (foundItems.length === 0) {
+        //3) ...Adicionar os default items
+        Item.insertMany(
+          defaultItems,
+          (err) => {
+          //Handler se houver erros na adição de items a DB
+          if (err) {
+            console.log(err);
+          } else {
+            console.log("Success at inserting default items on DB");
+          }
+        });
+        //4) Após adicionar, redirecionar para a homepage
+        res.redirect('/');
+        //5) Se a DB NAO estiver vazia (a partir do 2º load da homepage, inclusive)
+      } else {
+        //6) Carregar a homepage com os items presentes na DB
+        res.render("list", {
+          listTitle: today,
+          newListItems: foundItems
+        });
+      }
+    });
+  })
+
+  .post((req, res) => {
+
+    /*permite criar/consultar uma lista utilizando o input*/
+    const newListName = req.body.newList;
+
+    if (newListName) {
+      res.redirect("/" + newListName);
     } else {
-      //6) Carregar a homepage com os items presentes na DB
-      res.render("list", {
-        listTitle: today,
-        newListItems: foundItems
+      console.log("blank list not valid");
+    }
+
+    //Adicionar items a homepage e as listas criadas
+    //1) Dados necessários: nome do item e titulo da lista
+    const itemName = req.body.newItem;
+    const listTitle = req.body.list;
+
+    //2) Criação de um documento do tipo Item
+    const itemToAdd = new Item({
+      content: itemName,
+    });
+    //3) Caso estejamos na homepage, o item é adicionado a coleção items
+    if (listTitle === today) {
+      itemToAdd.save();
+      res.redirect("/");
+    //4) caso contrario (CC), o item sera adicionado a lista com o titulo recebido
+    } else {
+      List.findOne(
+        {name: listTitle},//filter
+        (err, foundList) => {
+        if (!err) {
+          if (foundList) {
+            //5) Item é adicionado directamente ao array de items da lista
+            foundList.items.push(itemToAdd);
+            //6) é feito o update da lista na DB
+            foundList.save();
+            //7) redirect para a pagina da lista
+            res.redirect("/" + listTitle);
+          } else {
+            console.log("error: list not found!");
+          }
+        }
       });
     }
   });
-});
 
 
-//Adicionar uma nova lista a partir da url (e.g. localhost:3000/nomeDaNovaLista)
+// Criar/Consultar listas
 app.get("/:customListName", (req, res) => {
   //1) Garantir que o nome da lista é capitalizado
   const customListName = _.capitalize(req.params.customListName);
@@ -138,43 +186,7 @@ app.get("/:customListName", (req, res) => {
 });
 
 
-//Adicionar items a homepage e as listas criadas
-app.post("/", (req, res) => {
-  //1) Dados necessários: nome do item e titulo da lista
-  const itemName = req.body.newItem;
-  const listTitle = req.body.list;
-
-  //2) Criação de um documento do tipo Item
-  const itemToAdd = new Item({
-    content: itemName,
-  });
-  //3) Caso estejamos na homepage, o item é adicionado a coleção items
-  if (listTitle === today) {
-    itemToAdd.save();
-    res.redirect("/");
-  //4) caso contrario (CC), o item sera adicionado a lista com o titulo recebido
-  } else {
-    List.findOne(
-      {name: listTitle},//filter
-      (err, foundList) => {
-      if (!err) {
-        if (foundList) {
-          //5) Item é adicionado directamente ao array de items da lista
-          foundList.items.push(itemToAdd);
-          //6) é feito o update da lista na DB
-          foundList.save();
-          //7) redirect para a pagina da lista
-          res.redirect("/" + listTitle);
-        } else {
-          console.log("error: list not found!");
-        }
-      }
-    });
-  }
-});
-
-
-//Remover da homepage ou de uma das listas criadas
+//Remover item de uma lista (delete one)
 app.post("/delete", (req, res) => {
   //1) Dados necessários: nome do item e titulo da lista
   const itemToDelID = req.body.checkbox;
