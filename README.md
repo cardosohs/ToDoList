@@ -8,7 +8,8 @@ Simple todo list web app made along with Udemy's Web Development course.
 - [ ] Remove lists;
 ### Tech Stack
 - Front-End: HTML, CSS, EJS;
-- Back-End: NodeJS, MongoDB, Mongoose;
+- Back-End: NodeJS, ExpressJS;
+- DB: MongoDB, Mongoose;
 ### URL
 - https://todolist-cardosohs.herokuapp.com/
 
